@@ -221,6 +221,7 @@ char **child_setup_environment(struct passwd *pw) {
 
   envp = env__add(envp, "HOME", pw->pw_dir);
   envp = env__add(envp, "USER", pw->pw_name);
+  envp = env__add(envp, "TERM", "xterm");
 
   if (pw->pw_uid == 0) {
     envp = env__add(envp, "PATH", "/sbin:/bin:/usr/sbin:/usr/bin");
@@ -301,12 +302,11 @@ int child_fork(msg_request_t *req, int in, int out, int err) {
       goto error;
     }
     
+    envp = child_setup_environment(pw);
+    assert(envp != NULL);
 
-    //envp = child_setup_environment(pw);
-    //assert(envp != NULL);
-
-    //execvpe(argv[0], argv, envp);
-    execvp(argv[0], argv);
+    execvpe(argv[0], argv, envp);
+    //execvp(argv[0], argv);
     perror("execvpe");
 
 error:
