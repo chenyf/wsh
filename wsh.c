@@ -247,7 +247,7 @@ void loop_interactive(int fd) {
   pty_remote_fd = fds[0];
   pty_local_fd = STDIN_FILENO;
 
-  //tty_raw();
+  tty_raw();
   tty_winsz();
 
   pump_t p;
