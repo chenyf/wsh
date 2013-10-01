@@ -7,20 +7,35 @@ The orig wsh is copied from cloudfoundry/warden
 
 usage:
 
-1. create a Linux Container use your favirate way, for example: docker. The import thing is you need binding mount a
-directory inside container, assume /tmp/hostdir --> /tmp/guestdir 
+### 1. get wsh
 
-2. inside containr:
-  
-  wshd --run /tmp/guestdir -d  
-  
-  this command will create a unix socket file:  /tmp/guestdir/wshd.sock 
+mkdir $HOME/github
 
-3. on the host, now you can execute command inside container like this:
+cd $HOME/github
 
-  wsh --socket /tmp/hostdir/wshd.sock  ps auxf
+git clone https://github.com/chenyf/wsh.git
 
-  wsh --socket /tmp/hostdir/wshd.sock  echo "hello"
+### 2. build wsh
+cd wsh
 
-  wsh --socket /tmp/hostdir/wshd.sock  /bin/bash
+make
+
+### 3. run container with wshd
+mkdir share
+
+cp wshd share/
+
+sudo docker run -d -v $HOME/github/wsh/share:/share -t ubuntu:12.04 /share/wshd  --run /share
+
+### 4. now you can execute command inside container from thie host
+
+sudo ./wsh --socket $HOME/github/wsh/share/wshd.sock hostname
+sudo ./wsh --socket $HOME/github/wsh/share/wshd.sock ls /
+
+Have funs!
+
+
+
+
+
 
